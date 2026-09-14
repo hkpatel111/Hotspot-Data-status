@@ -22,23 +22,23 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Check and Setup Gradle Wrapper
+    - name: Upgrade Gradle Wrapper to Compatible Version
       run: |
-        if [ ! -f "./gradlew" ]; then
-          echo "gradlew not found, installing system gradle to generate wrapper..."
-          sudo apt-get update && sudo apt-get install -y gradle
-          gradle wrapper
+        # Purane gradle version ko hata kar Java 17 compatible Gradle 8.5 set kar rahe hain
+        if [ -f "./gradle/wrapper/gradle-wrapper.properties" ]; then
+          sed -i 's/distributionUrl=.*$/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-8.5-bin.zip/g' ./gradle/wrapper/gradle-wrapper.properties
+        fi
+        
+        if [ -f "./gradlew" ]; then
+          chmod +x gradlew
         else
+          gradle wrapper --gradle-version 8.5
           chmod +x gradlew
         fi
 
     - name: Build Debug APK with Gradle
       run: |
-        if [ -f "./gradlew" ]; then
-          ./gradlew assembleDebug --stacktrace
-        else
-          gradle assembleDebug --stacktrace
-        fi
+        ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
