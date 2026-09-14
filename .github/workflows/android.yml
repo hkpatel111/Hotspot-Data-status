@@ -23,50 +23,140 @@ jobs:
       run: |
         export ANDROID_SDK_ROOT=$HOME/android-sdk
         mkdir -p $ANDROID_SDK_ROOT
-        
-        # Download Android Command Line Tools
         CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
-        echo "Downloading Android Command Line Tools..."
         curl -sSL $CMDLINE_TOOLS_URL -o cmdline-tools.zip
-        
         mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
         unzip -q cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools/
         mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/
         rm -rf $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools cmdline-tools.zip
-
-        # Accept licenses and install platform-tools & build-tools
         export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
         yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses || true
         sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "build-tools;34.0.0" "platforms;android-34"
-
         echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
         echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
 
-    - name: Fix Missing Gradle Project Structure & Wrapper
+    - name: Auto-Heal Project Folder Structure & Files
       run: |
-        if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
-          echo "include ':app'" > settings.gradle
-        fi
-
-        if [ ! -f "./gradlew" ]; then
-          gradle wrapper --gradle-version 8.5
-          chmod +x gradlew
-        else
-          chmod +x gradlew
-        fi
+        echo "Reconstructing Android Project Structure..."
+        
+        # 1. Create essential directories
+        mkdir -p app/src/main/java/com/hotspot/gateway
+        mkdir -p app/src/main/res/layout
+        
+        # 2. Find and move all Kotlin files to the correct package folder safely
+        find . -name "*.kt" -not -path "*/app/src/main/java/com/hotspot/gateway/*" -exec cp {} app/src/main/java/com/hotspot/gateway/ \;
+        
+        # 3. Create missing UI Layout File (activity_main.xml)
+        cat << 'EOF' > app/src/main/res/layout/activity_main.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical" android:padding="16dp">
+            <EditText android:id="@+id/etTargetNumber" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Target Mobile Number" />
+            <EditText android:id="@+id/etInterval" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Interval (Minutes)" android:inputType="number" />
+            <EditText android:id="@+id/etBootDelay" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Boot Delay (Seconds)" android:inputType="number" />
+            <Switch android:id="@+id/switchBootHotspot" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto Hotspot on Boot" />
+            <Switch android:id="@+id/switchCommands" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Enable SMS Commands" />
+            <Button android:id="@+id/btnSave" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Save &amp; Start" />
+        </LinearLayout>
+        EOF
+        
+        # 4. Generate AndroidManifest.xml if missing
+        cat << 'EOF' > app/src/main/AndroidManifest.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hotspot.gateway">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.SEND_SMS" />
+            <uses-permission android:name="android.permission.RECEIVE_SMS" />
+            <uses-permission android:name="android.permission.READ_SMS" />
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <application android:allowBackup="true" android:label="Hotspot Gateway" android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+                <activity android:name=".MainActivity" android:exported="true">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+                <service android:name=".HotspotService" android:enabled="true" android:exported="false" android:foregroundServiceType="dataSync" />
+                <receiver android:name=".BootReceiver" android:enabled="true" android:exported="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+                    <intent-filter>
+                        <action android:name="android.intent.action.BOOT_COMPLETED" />
+                        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                    </intent-filter>
+                </receiver>
+                <receiver android:name=".SmsReceiver" android:enabled="true" android:exported="true">
+                    <intent-filter android:priority="999">
+                        <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                    </intent-filter>
+                </receiver>
+            </application>
+        </manifest>
+        EOF
+        
+        # 5. Create root build.gradle
+        cat << 'EOF' > ./build.gradle
+        buildscript {
+            repositories { google(); mavenCentral() }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:8.1.4'
+                classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20'
+            }
+        }
+        allprojects { repositories { google(); mavenCentral() } }
+        EOF
+        
+        # 6. Create app/build.gradle
+        cat << 'EOF' > app/build.gradle
+        plugins {
+            id 'com.android.application'
+            id 'org.jetbrains.kotlin.android'
+        }
+        android {
+            namespace 'com.hotspot.gateway'
+            compileSdk 34
+            defaultConfig {
+                applicationId "com.hotspot.gateway"
+                minSdk 26
+                targetSdk 34
+                versionCode 1
+                versionName "1.0"
+            }
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+            kotlinOptions { jvmTarget = '17' }
+        }
+        dependencies {
+            implementation 'androidx.core:core-ktx:1.12.0'
+            implementation 'androidx.appcompat:appcompat:1.6.1'
+        }
+        EOF
+        
+        # 7. Create settings.gradle
+        echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle
+        echo "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" >> settings.gradle
+        echo "rootProject.name = 'HotspotGateway'" >> settings.gradle
+        echo "include ':app'" >> settings.gradle
+        
+        # 8. Setup fresh Gradle Wrapper
+        gradle wrapper --gradle-version 8.5
+        chmod +x gradlew
 
     - name: Build Debug APK with Gradle
-      run: |
-        ./gradlew assembleDebug --stacktrace
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       if: success()
       uses: actions/upload-artifact@v4
       with:
         name: hotspot-gateway-debug-apk
-        path: |
-          **/build/outputs/apk/debug/*.apk
-          app/build/outputs/apk/debug/*.apk
+        path: app/build/outputs/apk/debug/*.apk
 
     - name: Upload Error Logs on Failure
       if: failure()
