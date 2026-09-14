@@ -33,236 +33,119 @@ jobs:
 
     - name: Generate Layout XML
       run: |
-        cat << 'EOF' > app/src/main/res/layout/activity_main.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:background="#F5F6FA">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Data Reporter v4.2 Pro"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#111827" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Foreground Persistence + Granular SMS Toggles"
-                    android:textSize="13sp"
-                    android:textColor="#6B7280"
-                    android:layout_marginBottom="16dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="#FFFFFF"
-                    android:padding="16dp"
-                    android:elevation="2dp"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Target Phone Number"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:layout_marginBottom="4dp" />
-
-                    <EditText
-                        android:id="@+id/etTargetNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:hint="e.g. +919876543210"
-                        android:inputType="phone"
-                        android:textSize="14sp"
-                        android:paddingHorizontal="8dp"
-                        android:layout_marginBottom="12dp" />
-
-                    <Switch
-                        android:id="@+id/switchForeground"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Run in Foreground (Prevent App Kill)"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#4F46E5"
-                        android:paddingVertical="8dp" />
-
-                    <Switch
-                        android:id="@+id/switchBootHotspot"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Auto Hotspot on Device Boot"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:paddingVertical="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Granular SMS Command Toggles"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#059669"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="4dp" />
-
-                    <Switch
-                        android:id="@+id/switchSmsForwardAll"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Forward All Incoming SMS"
-                        android:textSize="13sp"
-                        android:textColor="#374151"
-                        android:paddingVertical="4dp" />
-
-                    <Switch
-                        android:id="@+id/switchSmsHotspotCmd"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Allow SMS Hotspot Control (HOTSPOT_ON/OFF)"
-                        android:textSize="13sp"
-                        android:textColor="#374151"
-                        android:paddingVertical="4dp" />
-
-                    <Switch
-                        android:id="@+id/switchSmsStatusCmd"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Allow SMS Status/5G Query (GET_STATUS)"
-                        android:textSize="13sp"
-                        android:textColor="#374151"
-                        android:paddingVertical="4dp" />
-
-                    <Switch
-                        android:id="@+id/switchSmsRefreshCmd"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Allow SMS Refresh/Restart Cmd (REFRESH)"
-                        android:textSize="13sp"
-                        android:textColor="#374151"
-                        android:paddingVertical="4dp"
-                        android:layout_marginBottom="12dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2"
-                        android:layout_marginBottom="8dp">
-
-                        <Button
-                            android:id="@+id/btnSave"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="SAVE &amp; APPLY"
-                            android:backgroundTint="#4F46E5"
-                            android:textColor="#FFFFFF"
-                            android:layout_marginRight="4dp" />
-
-                        <Button
-                            android:id="@+id/btnRefresh"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="REFRESH STATS"
-                            android:backgroundTint="#4B5563"
-                            android:textColor="#FFFFFF"
-                            android:layout_marginLeft="4dp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
-
-                        <Button
-                            android:id="@+id/btnSendNow"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="SEND REPORT NOW"
-                            android:backgroundTint="#059669"
-                            android:textColor="#FFFFFF"
-                            android:layout_marginRight="4dp" />
-
-                        <Button
-                            android:id="@+id/btnClearData"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="CLEAR DATA"
-                            android:backgroundTint="#DC2626"
-                            android:textColor="#FFFFFF"
-                            android:layout_marginLeft="4dp" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="#E5E7EB"
-                    android:padding="10dp"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MacroDroid Integration File Path:"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="#374151" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="/storage/emulated/0/Android/data/com.hotspot.gateway/files/DataReporter/data.txt"
-                        android:textSize="11sp"
-                        android:textColor="#4B5563"
-                        android:fontFamily="monospace" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Live System Stats &amp; Preview"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#111827"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/tvLiveStats"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:padding="12dp"
-                    android:textSize="13sp"
-                    android:textColor="#1F2937"
-                    android:fontFamily="monospace"
-                    android:text="Initializing stats..."
-                    android:elevation="1dp" />
-
-            </LinearLayout>
-        </ScrollView>
-        EOF
+        echo '<?xml version="1.0" encoding="utf-8"?>' > app/src/main/res/layout/activity_main.xml
+        echo '<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"' >> app/src/main/res/layout/activity_main.xml
+        echo '    android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '    android:layout_height="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '    android:fillViewport="true"' >> app/src/main/res/layout/activity_main.xml
+        echo '    android:background="#F5F6FA">' >> app/src/main/res/layout/activity_main.xml
+        echo '    <LinearLayout' >> app/src/main/res/layout/activity_main.xml
+        echo '        android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '        android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '        android:orientation="vertical"' >> app/src/main/res/layout/activity_main.xml
+        echo '        android:padding="16dp">' >> app/src/main/res/layout/activity_main.xml
+        echo '        <TextView' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_width="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:text="Data Reporter v4.2 Pro"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:textSize="24sp"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:textStyle="bold"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:textColor="#111827" />' >> app/src/main/res/layout/activity_main.xml
+        echo '        <LinearLayout' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:orientation="vertical"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:background="#FFFFFF"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:padding="16dp"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_marginTop="16dp">' >> app/src/main/res/layout/activity_main.xml
+        echo '            <EditText' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/etTargetNumber"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="45dp"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:hint="Target Phone Number (+91...)"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:inputType="phone"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_marginBottom="12dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Switch' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/switchForeground"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="Run in Foreground (Prevent App Kill)"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:paddingVertical="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Switch' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/switchBootHotspot"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="Auto Hotspot on Boot"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:paddingVertical="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Switch' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/switchSmsForwardAll"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="Forward All Incoming SMS"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:paddingVertical="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Switch' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/switchSmsHotspotCmd"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="Allow SMS Hotspot Control (HOTSPOT_ON/OFF)"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:paddingVertical="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Switch' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/switchSmsStatusCmd"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="Allow SMS Status/5G Query (GET_STATUS)"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:paddingVertical="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Switch' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/switchSmsRefreshCmd"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="Allow SMS Refresh Cmd (REFRESH)"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:paddingVertical="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Button' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/btnSave"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="SAVE CONFIGURATION"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:backgroundTint="#4F46E5"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:textColor="#FFFFFF"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_marginTop="12dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Button' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/btnRefresh"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="REFRESH STATS"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:backgroundTint="#4B5563"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:textColor="#FFFFFF"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_marginTop="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Button' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/btnSendNow"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="SEND REPORT NOW"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:backgroundTint="#059669"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:textColor="#FFFFFF"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_marginTop="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '            <Button' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:id="@+id/btnClearData"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:text="CLEAR DATA"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:backgroundTint="#DC2626"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:textColor="#FFFFFF"' >> app/src/main/res/layout/activity_main.xml
+        echo '                android:layout_marginTop="8dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '        </LinearLayout>' >> app/src/main/res/layout/activity_main.xml
+        echo '        <TextView' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:id="@+id/tvLiveStats"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_width="match_parent"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_height="wrap_content"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:background="#FFFFFF"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:padding="12dp"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:textSize="13sp"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:textColor="#1F2937"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:fontFamily="monospace"' >> app/src/main/res/layout/activity_main.xml
+        echo '            android:layout_marginTop="16dp" />' >> app/src/main/res/layout/activity_main.xml
+        echo '    </LinearLayout>' >> app/src/main/res/layout/activity_main.xml
+        echo '</ScrollView>' >> app/src/main/res/layout/activity_main.xml
 
     - name: Generate AndroidManifest XML
       run: |
@@ -336,7 +219,6 @@ jobs:
         import java.util.*
 
         class MainActivity : AppCompatActivity() {
-
             override fun onCreate(savedInstanceState: Bundle?) {
                 super.onCreate(savedInstanceState)
                 setContentView(R.layout.activity_main)
@@ -355,31 +237,27 @@ jobs:
                 val btnClearData = findViewById<Button>(R.id.btnClearData)
                 val tvLiveStats = findViewById<TextView>(R.id.tvLiveStats)
 
-                val sharedPreferences = getSharedPreferences("DataReporterPrefs", Context.MODE_PRIVATE)
+                val prefs = getSharedPreferences("DataReporterPrefs", Context.MODE_PRIVATE)
 
-                etTargetNumber.setText(sharedPreferences.getString("target_number", ""))
-                switchForeground.isChecked = sharedPreferences.getBoolean("run_foreground", false)
-                switchBootHotspot.isChecked = sharedPreferences.getBoolean("boot_hotspot", false)
-                switchSmsForwardAll.isChecked = sharedPreferences.getBoolean("sms_forward_all", false)
-                switchSmsHotspotCmd.isChecked = sharedPreferences.getBoolean("sms_hotspot_cmd", true)
-                switchSmsStatusCmd.isChecked = sharedPreferences.getBoolean("sms_status_cmd", true)
-                switchSmsRefreshCmd.isChecked = sharedPreferences.getBoolean("sms_refresh_cmd", true)
+                etTargetNumber.setText(prefs.getString("target_number", ""))
+                switchForeground.isChecked = prefs.getBoolean("run_foreground", false)
+                switchBootHotspot.isChecked = prefs.getBoolean("boot_hotspot", false)
+                switchSmsForwardAll.isChecked = prefs.getBoolean("sms_forward_all", false)
+                switchSmsHotspotCmd.isChecked = prefs.getBoolean("sms_hotspot_cmd", true)
+                switchSmsStatusCmd.isChecked = prefs.getBoolean("sms_status_cmd", true)
+                switchSmsRefreshCmd.isChecked = prefs.getBoolean("sms_refresh_cmd", true)
 
                 val refreshStats = {
                     val stats = getRealTimeStats(this)
                     tvLiveStats.text = stats
                     saveStatsToFile(this, stats)
                 }
-
                 refreshStats()
 
                 btnSave.setOnClickListener {
-                    val number = etTargetNumber.text.toString().trim()
-                    val isForeground = switchForeground.isChecked
-
-                    sharedPreferences.edit().apply {
-                        putString("target_number", number)
-                        putBoolean("run_foreground", isForeground)
+                    prefs.edit().apply {
+                        putString("target_number", etTargetNumber.text.toString().trim())
+                        putBoolean("run_foreground", switchForeground.isChecked)
                         putBoolean("boot_hotspot", switchBootHotspot.isChecked)
                         putBoolean("sms_forward_all", switchSmsForwardAll.isChecked)
                         putBoolean("sms_hotspot_cmd", switchSmsHotspotCmd.isChecked)
@@ -388,34 +266,23 @@ jobs:
                         apply()
                     }
 
-                    val serviceIntent = Intent(this, HotspotService::class.java)
-                    if (isForeground) {
-                        ContextCompat.startForegroundService(this, serviceIntent)
-                        Toast.makeText(this, "Foreground Service Activated!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, HotspotService::class.java)
+                    if (switchForeground.isChecked) {
+                        ContextCompat.startForegroundService(this, intent)
                     } else {
-                        stopService(serviceIntent)
-                        Toast.makeText(this, "Foreground Service Stopped.", Toast.LENGTH_SHORT).show()
+                        stopService(intent)
                     }
-
-                    Toast.makeText(this, "Settings Saved Successfully!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_SHORT).show()
                     refreshStats()
                 }
 
                 btnRefresh.setOnClickListener {
                     refreshStats()
-                    Toast.makeText(this, "Stats Refreshed!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Refreshed!", Toast.LENGTH_SHORT).show()
                 }
 
                 btnSendNow.setOnClickListener {
                     val target = etTargetNumber.text.toString().trim()
-                    if (target.isEmpty()) {
-                        Toast.makeText(this, "Please enter Target Phone Number first!", Toast.LENGTH_SHORT).show()
-                    } else {
+                    if (target.isNotEmpty()) {
                         val stats = getRealTimeStats(this)
-                        try {
-                            val smsManager = android.telephony.SmsManager.getDefault()
-                            smsManager.sendTextMessage(target, null, "MANUAL_REPORT:\n$stats", null, null)
-                            Toast.makeText(this, "Report sent to $target", Toast.LENGTH_LONG).show()
-                        } catch (e: Exception) {
-                            Toast.makeText(this, "SMS failed: ${e.message}", Toast.LENGTH_LONG).show()
- 
+       
