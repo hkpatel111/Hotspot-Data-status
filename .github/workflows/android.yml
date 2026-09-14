@@ -42,7 +42,6 @@ jobs:
         # 1. Create essential directories
         mkdir -p app/src/main/java/com/hotspot/gateway
         mkdir -p app/src/main/res/layout
-        mkdir -p gradle/wrapper
         
         # 2. Find and move all Kotlin files to the correct package folder safely
         find . -name "*.kt" -not -path "*/app/src/main/java/com/hotspot/gateway/*" -exec cp {} app/src/main/java/com/hotspot/gateway/ \;
@@ -99,7 +98,7 @@ jobs:
         </manifest>
         EOF
         
-        # 5. Create root build.gradle (Compatible with Gradle 8.2)
+        # 5. Create root build.gradle
         cat << 'EOF' > ./build.gradle
         plugins {
             id 'com.android.application' version '8.1.2' apply false
@@ -157,22 +156,15 @@ jobs:
         rootProject.name = 'HotspotGateway'
         include ':app'
         EOF
-        
-        # 8. Forcefully create wrapper properties for Gradle 8.2 (Bypassing global 9.x runner gradle)
-        cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
-        distributionBase=GRADLE_USER_HOME
-        distributionPath=wrapper/dists
-        distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
-        zipStoreBase=GRADLE_USER_HOME
-        zipStorePath=wrapper/dists
-        EOF
 
-        # Download gradle wrapper jar if missing or generate script
-        gradle wrapper --gradle-version 8.2 || true
-        chmod +x gradlew
+    - name: Download and Install Exact Gradle 8.2 Binary
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
+        unzip -q gradle-8.2-bin.zip
+        echo "$(pwd)/gradle-8.2/bin" >> $GITHUB_PATH
 
-    - name: Build Debug APK with Gradle
-      run: ./gradlew assembleDebug --stacktrace
+    - name: Build Debug APK with Gradle 8.2
+      run: gradle assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       if: success()
