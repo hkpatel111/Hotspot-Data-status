@@ -1,4 +1,4 @@
-name: Build Data Reporter v4.2 APK
+name: Build Data Reporter v4.2 Pro APK
 
 on:
   push:
@@ -26,14 +26,13 @@ jobs:
         echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
         echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
-    - name: Auto-Heal Project & Build Data Reporter v4.2 Pro
+    - name: Create Project Directories
       run: |
-        set -e
-        echo "Reconstructing Data Reporter v4.2 Pro Project Structure..."
-        
         mkdir -p app/src/main/java/com/hotspot/gateway
         mkdir -p app/src/main/res/layout
-        
+
+    - name: Generate Layout XML
+      run: |
         cat << 'EOF' > app/src/main/res/layout/activity_main.xml
         <?xml version="1.0" encoding="utf-8"?>
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -265,6 +264,8 @@ jobs:
         </ScrollView>
         EOF
 
+    - name: Generate AndroidManifest XML
+      run: |
         cat << 'EOF' > app/src/main/AndroidManifest.xml
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hotspot.gateway">
@@ -315,6 +316,8 @@ jobs:
         </manifest>
         EOF
 
+    - name: Generate Kotlin Source Files
+      run: |
         cat << 'EOF' > app/src/main/java/com/hotspot/gateway/MainActivity.kt
         package com.hotspot.gateway
 
@@ -354,7 +357,6 @@ jobs:
 
                 val sharedPreferences = getSharedPreferences("DataReporterPrefs", Context.MODE_PRIVATE)
 
-                // Load preferences
                 etTargetNumber.setText(sharedPreferences.getString("target_number", ""))
                 switchForeground.isChecked = sharedPreferences.getBoolean("run_foreground", false)
                 switchBootHotspot.isChecked = sharedPreferences.getBoolean("boot_hotspot", false)
@@ -386,7 +388,6 @@ jobs:
                         apply()
                     }
 
-                    // Start or Stop Foreground Service accordingly
                     val serviceIntent = Intent(this, HotspotService::class.java)
                     if (isForeground) {
                         ContextCompat.startForegroundService(this, serviceIntent)
@@ -416,4 +417,5 @@ jobs:
                             smsManager.sendTextMessage(target, null, "MANUAL_REPORT:\n$stats", null, null)
                             Toast.makeText(this, "Report sent to $target", Toast.LENGTH_LONG).show()
                         } catch (e: Exception) {
-                            T
+                            Toast.makeText(this, "SMS failed: ${e.message}", Toast.LENGTH_LONG).show()
+ 
