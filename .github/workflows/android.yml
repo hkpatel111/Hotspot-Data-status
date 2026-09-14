@@ -20,7 +20,6 @@ jobs:
             mkdir -p unzipped_temp
             unzip -q "$ZIP_FILE" -d unzipped_temp
             
-            # Zip ke andar se settings.gradle ya gradlew ko dhoondhein
             PROJECT_PATH=$(find unzipped_temp -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1)
             
             if [ -n "$PROJECT_PATH" ]; then
@@ -47,13 +46,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew and Fix Gradle Version
         run: |
           if [ -f gradlew ]; then 
             chmod +x gradlew
+            echo "Switching to compatible Gradle 8.5..."
+            ./gradlew wrapper --gradle-version 8.5
           else
-            echo "Generating Gradle Wrapper..."
-            gradle wrapper || true
+            echo "Generating Gradle Wrapper with version 8.5..."
+            gradle wrapper --gradle-version 8.5 || true
             if [ -f gradlew ]; then chmod +x gradlew; fi
           fi
 
