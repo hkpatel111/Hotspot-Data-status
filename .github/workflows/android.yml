@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Data Reporter v4 APK
 
 on:
   push:
@@ -265,7 +265,7 @@ jobs:
         </ScrollView>
         EOF
         
-        # 3. Generate AndroidManifest.xml with Name 'Data Reporter v4'
+        # 3. Generate AndroidManifest.xml
         cat << 'EOF' > app/src/main/AndroidManifest.xml
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hotspot.gateway">
@@ -336,8 +336,6 @@ jobs:
                 val tvLiveStats = findViewById<TextView>(R.id.tvLiveStats)
 
                 btnSave.setOnClickListener {
-                    val number = etTargetNumber.text.toString().trim()
-                    val interval = etInterval.text.toString().trim()
                     Toast.makeText(this, "Data Reporter v4 Settings Saved!", Toast.LENGTH_SHORT).show()
                 }
 
@@ -423,4 +421,9 @@ jobs:
                 versionName "4.0"
             }
             compileOptions {
-                sourceCompatibility JavaVersi
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+            kotlinOptions { jvmTarget = '17' }
+        }
+        dependen
