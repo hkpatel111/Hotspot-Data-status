@@ -21,7 +21,6 @@ jobs:
 
     - name: Configure Android SDK Paths
       run: |
-        # Resolve conflict by setting both to GitHub runner's default pre-installed SDK path
         echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
         echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
         echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
@@ -147,6 +146,13 @@ jobs:
         }
         rootProject.name = 'HotspotGateway'
         include ':app'
+        EOF
+
+        # 8. Create gradle.properties to enable AndroidX
+        cat << 'EOF' > gradle.properties
+        android.useAndroidX=true
+        android.enableJetifier=true
+        org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
         EOF
 
     - name: Download and Install Exact Gradle 8.2 Binary
