@@ -14,33 +14,40 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: android-actions/setup-java@v5
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - name: Fix Missing Gradle Project Structure
+    - name: Setup Android SDK Environment
       run: |
-        echo "Searching for gradle files in the repository..."
-        find . -maxdepth 3 -name "settings.gradle*" -o -name "build.gradle*"
+        export ANDROID_SDK_ROOT=$HOME/android-sdk
+        mkdir -p $ANDROID_SDK_ROOT
         
-        # Agar root me settings.gradle nahi hai, toh subfolder se dhoond kar bahar laye ya naya create karein
+        # Download Android Command Line Tools
+        CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+        echo "Downloading Android Command Line Tools..."
+        curl -sSL $CMDLINE_TOOLS_URL -o cmdline-tools.zip
+        
+        mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
+        unzip -q cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools/
+        mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/
+        rm -rf $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools cmdline-tools.zip
+
+        # Accept licenses and install platform-tools & build-tools
+        export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+        yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses || true
+        sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+
+        echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+        echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
+
+    - name: Fix Missing Gradle Project Structure & Wrapper
+      run: |
         if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
-          echo "Root settings.gradle missing. Checking subfolders..."
-          SUB_SETTINGS=$(find . -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1)
-          if [ -n "$SUB_SETTINGS" ]; then
-            echo "Found settings.gradle in subfolder, copying to root..."
-            cp "$SUB_SETTINGS" ./
-          else
-            echo "Creating a default settings.gradle and root build.gradle..."
-            echo "include ':app'" > settings.gradle
-          fi
+          echo "include ':app'" > settings.gradle
         fi
 
-        # Ensure gradle wrapper exists or generate it
         if [ ! -f "./gradlew" ]; then
           gradle wrapper --gradle-version 8.5
           chmod +x gradlew
@@ -49,8 +56,6 @@ jobs:
         fi
 
     - name: Build Debug APK with Gradle
-      id: build_step
-      continue-on-error: true
       run: |
         ./gradlew assembleDebug --stacktrace
 
@@ -71,5 +76,3 @@ jobs:
         path: |
           **/*.log
           **/build/reports/
-          hs_err_pid*.log
-          .gradle/
