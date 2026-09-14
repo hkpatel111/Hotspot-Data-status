@@ -19,21 +19,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK Environment
+    - name: Configure Android SDK Paths
       run: |
-        export ANDROID_SDK_ROOT=$HOME/android-sdk
-        mkdir -p $ANDROID_SDK_ROOT
-        CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
-        curl -sSL $CMDLINE_TOOLS_URL -o cmdline-tools.zip
-        mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
-        unzip -q cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools/
-        mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/
-        rm -rf $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools cmdline-tools.zip
-        export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
-        yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses || true
-        sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "build-tools;34.0.0" "platforms;android-34"
-        echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-        echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
+        # Resolve conflict by setting both to GitHub runner's default pre-installed SDK path
+        echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
+        echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
     - name: Auto-Heal Project Folder Structure & Files
       run: |
