@@ -28,13 +28,12 @@ jobs:
 
     - name: Auto-Heal Project & Build Data Reporter v4
       run: |
+        set -e
         echo "Reconstructing Data Reporter v4 Project Structure..."
         
-        # 1. Create essential directories
         mkdir -p app/src/main/java/com/hotspot/gateway
         mkdir -p app/src/main/res/layout
         
-        # 2. Create Professional Dashboard UI Layout (activity_main.xml)
         cat << 'EOF' > app/src/main/res/layout/activity_main.xml
         <?xml version="1.0" encoding="utf-8"?>
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -49,7 +48,6 @@ jobs:
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Header Title Section -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -66,7 +64,6 @@ jobs:
                     android:textColor="#6B7280"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Configuration Card -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,7 +110,6 @@ jobs:
                         android:paddingHorizontal="8dp"
                         android:layout_marginBottom="12dp" />
 
-                    <!-- Toggles Section -->
                     <Switch
                         android:id="@+id/switchEnableTracking"
                         android:layout_width="match_parent"
@@ -155,7 +151,6 @@ jobs:
                         android:paddingVertical="8dp"
                         android:layout_marginBottom="8dp" />
 
-                    <!-- Action Buttons Grid -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -213,7 +208,6 @@ jobs:
 
                 </LinearLayout>
 
-                <!-- MacroDroid Paths Box -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -239,7 +233,6 @@ jobs:
                         android:fontFamily="monospace" />
                 </LinearLayout>
 
-                <!-- Live Stats Section -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -264,8 +257,7 @@ jobs:
             </LinearLayout>
         </ScrollView>
         EOF
-        
-        # 3. Generate AndroidManifest.xml
+
         cat << 'EOF' > app/src/main/AndroidManifest.xml
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hotspot.gateway">
@@ -302,7 +294,6 @@ jobs:
         </manifest>
         EOF
 
-        # 4. Create Fully Functional MainActivity.kt
         cat << 'EOF' > app/src/main/java/com/hotspot/gateway/MainActivity.kt
         package com.hotspot.gateway
 
@@ -324,11 +315,6 @@ jobs:
 
                 val etTargetNumber = findViewById<EditText>(R.id.etTargetNumber)
                 val etInterval = findViewById<EditText>(R.id.etInterval)
-                val switchEnableTracking = findViewById<Switch>(R.id.switchEnableTracking)
-                val switchClientTracking = findViewById<Switch>(R.id.switchClientTracking)
-                val switchBootHotspot = findViewById<Switch>(R.id.switchBootHotspot)
-                val switchSmsCommands = findViewById<Switch>(R.id.switchSmsCommands)
-
                 val btnSave = findViewById<Button>(R.id.btnSave)
                 val btnRefresh = findViewById<Button>(R.id.btnRefresh)
                 val btnSendNow = findViewById<Button>(R.id.btnSendNow)
@@ -362,7 +348,6 @@ jobs:
         }
         EOF
 
-        # 5. Create Service and Receivers Stub Files
         cat << 'EOF' > app/src/main/java/com/hotspot/gateway/HotspotService.kt
         package com.hotspot.gateway
         import android.app.Service
@@ -393,7 +378,6 @@ jobs:
         }
         EOF
         
-        # 6. Create root build.gradle
         cat << 'EOF' > ./build.gradle
         plugins {
             id 'com.android.application' version '8.1.2' apply false
@@ -404,7 +388,6 @@ jobs:
         }
         EOF
         
-        # 7. Create app/build.gradle
         cat << 'EOF' > app/build.gradle
         plugins {
             id 'com.android.application'
@@ -426,4 +409,36 @@ jobs:
             }
             kotlinOptions { jvmTarget = '17' }
         }
-        dependen
+        dependencies {
+            implementation 'androidx.core:core-ktx:1.12.0'
+            implementation 'androidx.appcompat:appcompat:1.6.1'
+            implementation 'com.google.android.material:material:1.9.0'
+        }
+        EOF
+        
+        cat << 'EOF' > settings.gradle
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        rootProject.name = 'DataReporterV4'
+        include ':app'
+        EOF
+
+        cat << 'EOF' > gradle.properties
+        android.useAndroidX=true
+        android.enableJetifier=true
+        org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+        EOF
+        
+        echo "Project re
