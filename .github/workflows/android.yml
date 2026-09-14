@@ -9,8 +9,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Extract Zip File from Root
+        run: |
+          # Zip file ko dhoondhein aur extract karein
+          ZIP_FILE=$(ls *.zip 2>/dev/null | head -n 1)
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Found zip file: $ZIP_FILE. Extracting..."
+            mkdir -p unzipped_temp
+            unzip -q "$ZIP_FILE" -d unzipped_temp
+            
+            # Agar zip ke andar ek hi main folder hai toh uske andar ke files ko root par layein
+            cd unzipped_temp
+            if [ "$(ls -A | wc -l)" -eq 1 ] && [ -d "$(ls -A)" ]; then
+              INNER_DIR=$(ls -A)
+              cp -r "$INNER_DIR"/* ../
+            else
+              cp -r * ../
+            fi
+            cd ..
+            rm -rf unzipped_temp "$ZIP_FILE"
+            echo "Extraction completed successfully."
+          else
+            echo "No zip file found. Proceeding with existing files."
+          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -33,9 +57,8 @@ jobs:
           if [ -f gradlew ]; then
             ./gradlew assembleDebug --stacktrace
           else
-            echo "No gradle wrapper found. Project structure is ready for Android Studio / local build."
-            # Fallback: try system gradle if available
-            gradle assembleDebug --stacktrace || true
+            echo "Gradle wrapper not found after extraction."
+            exit 1
           fi
 
       - name: Upload APK
@@ -44,4 +67,3 @@ jobs:
           name: data-reporter-pro-v4.2-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: warn
-          
