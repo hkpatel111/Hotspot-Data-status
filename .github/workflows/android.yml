@@ -98,7 +98,7 @@ jobs:
         </manifest>
         EOF
         
-        # 5. Create clean modern root build.gradle (without repository blocks)
+        # 5. Create root build.gradle
         cat << 'EOF' > ./build.gradle
         plugins {
             id 'com.android.application' version '8.1.4' apply false
@@ -137,7 +137,7 @@ jobs:
         }
         EOF
         
-        # 7. Create settings.gradle with centralized repositories
+        # 7. Create settings.gradle
         cat << 'EOF' > settings.gradle
         pluginManagement {
             repositories {
@@ -157,7 +157,7 @@ jobs:
         include ':app'
         EOF
         
-        # 8. Setup fresh Gradle Wrapper
+        # 8. Forcefully generate and lock Gradle Wrapper to stable version 8.5
         gradle wrapper --gradle-version 8.5
         chmod +x gradlew
 
