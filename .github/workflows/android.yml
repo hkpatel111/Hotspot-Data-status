@@ -1,4 +1,4 @@
-name: Build Data Reporter v4 APK
+name: Build Data Reporter v4.2 APK
 
 on:
   push:
@@ -26,10 +26,10 @@ jobs:
         echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
         echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
-    - name: Auto-Heal Project & Build Data Reporter v4
+    - name: Auto-Heal Project & Build Data Reporter v4.2 Pro
       run: |
         set -e
-        echo "Reconstructing Data Reporter v4 Project Structure..."
+        echo "Reconstructing Data Reporter v4.2 Pro Project Structure..."
         
         mkdir -p app/src/main/java/com/hotspot/gateway
         mkdir -p app/src/main/res/layout
@@ -51,7 +51,7 @@ jobs:
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Data Reporter v4"
+                    android:text="Data Reporter v4.2 Pro"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#111827" />
@@ -59,7 +59,7 @@ jobs:
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Track data + send SMS + MacroDroid integration"
+                    android:text="Foreground Persistence + Granular SMS Toggles"
                     android:textSize="13sp"
                     android:textColor="#6B7280"
                     android:layout_marginBottom="16dp" />
@@ -91,65 +91,72 @@ jobs:
                         android:paddingHorizontal="8dp"
                         android:layout_marginBottom="12dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Report Interval (minutes)"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:layout_marginBottom="4dp" />
-
-                    <EditText
-                        android:id="@+id/etInterval"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:hint="60"
-                        android:text="60"
-                        android:inputType="number"
-                        android:textSize="14sp"
-                        android:paddingHorizontal="8dp"
-                        android:layout_marginBottom="12dp" />
-
                     <Switch
-                        android:id="@+id/switchEnableTracking"
+                        android:id="@+id/switchForeground"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Enable Data Tracking"
+                        android:text="Run in Foreground (Prevent App Kill)"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:paddingVertical="8dp" />
-
-                    <Switch
-                        android:id="@+id/switchClientTracking"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Enable Client Tracking"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
+                        android:textColor="#4F46E5"
                         android:paddingVertical="8dp" />
 
                     <Switch
                         android:id="@+id/switchBootHotspot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Auto Hotspot on Boot"
+                        android:text="Auto Hotspot on Device Boot"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#374151"
                         android:paddingVertical="8dp" />
 
-                    <Switch
-                        android:id="@+id/switchSmsCommands"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Enable SMS Remote Commands"
+                        android:text="Granular SMS Command Toggles"
                         android:textSize="14sp"
                         android:textStyle="bold"
+                        android:textColor="#059669"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="4dp" />
+
+                    <Switch
+                        android:id="@+id/switchSmsForwardAll"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Forward All Incoming SMS"
+                        android:textSize="13sp"
                         android:textColor="#374151"
-                        android:paddingVertical="8dp"
-                        android:layout_marginBottom="8dp" />
+                        android:paddingVertical="4dp" />
+
+                    <Switch
+                        android:id="@+id/switchSmsHotspotCmd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Allow SMS Hotspot Control (HOTSPOT_ON/OFF)"
+                        android:textSize="13sp"
+                        android:textColor="#374151"
+                        android:paddingVertical="4dp" />
+
+                    <Switch
+                        android:id="@+id/switchSmsStatusCmd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Allow SMS Status/5G Query (GET_STATUS)"
+                        android:textSize="13sp"
+                        android:textColor="#374151"
+                        android:paddingVertical="4dp" />
+
+                    <Switch
+                        android:id="@+id/switchSmsRefreshCmd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Allow SMS Refresh/Restart Cmd (REFRESH)"
+                        android:textSize="13sp"
+                        android:textColor="#374151"
+                        android:paddingVertical="4dp"
+                        android:layout_marginBottom="12dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -163,7 +170,7 @@ jobs:
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="SAVE"
+                            android:text="SAVE &amp; APPLY"
                             android:backgroundTint="#4F46E5"
                             android:textColor="#FFFFFF"
                             android:layout_marginRight="4dp" />
@@ -173,7 +180,7 @@ jobs:
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="REFRESH"
+                            android:text="REFRESH STATS"
                             android:backgroundTint="#4B5563"
                             android:textColor="#FFFFFF"
                             android:layout_marginLeft="4dp" />
@@ -190,7 +197,7 @@ jobs:
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="SEND NOW"
+                            android:text="SEND REPORT NOW"
                             android:backgroundTint="#059669"
                             android:textColor="#FFFFFF"
                             android:layout_marginRight="4dp" />
@@ -219,7 +226,7 @@ jobs:
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MacroDroid data files:"
+                        android:text="MacroDroid Integration File Path:"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:textColor="#374151" />
@@ -236,7 +243,7 @@ jobs:
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Live Stats &amp; Data Preview"
+                    android:text="Live System Stats &amp; Preview"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#111827"
@@ -251,7 +258,7 @@ jobs:
                     android:textSize="13sp"
                     android:textColor="#1F2937"
                     android:fontFamily="monospace"
-                    android:text="Data Reporter v4 Ready"
+                    android:text="Initializing stats..."
                     android:elevation="1dp" />
 
             </LinearLayout>
@@ -264,26 +271,41 @@ jobs:
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
             <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
             <uses-permission android:name="android.permission.SEND_SMS" />
             <uses-permission android:name="android.permission.RECEIVE_SMS" />
             <uses-permission android:name="android.permission.READ_SMS" />
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
             <uses-permission android:name="android.permission.WAKE_LOCK" />
-            <application android:allowBackup="true" android:label="Data Reporter v4" android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            
+            <application 
+                android:allowBackup="true" 
+                android:label="Data Reporter v4.2" 
+                android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+                
                 <activity android:name=".MainActivity" android:exported="true">
                     <intent-filter>
                         <action android:name="android.intent.action.MAIN" />
                         <category android:name="android.intent.category.LAUNCHER" />
                     </intent-filter>
                 </activity>
-                <service android:name=".HotspotService" android:enabled="true" android:exported="false" android:foregroundServiceType="dataSync" />
+                
+                <service 
+                    android:name=".HotspotService" 
+                    android:enabled="true" 
+                    android:exported="false" 
+                    android:foregroundServiceType="dataSync" />
+                
                 <receiver android:name=".BootReceiver" android:enabled="true" android:exported="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
                     <intent-filter>
                         <action android:name="android.intent.action.BOOT_COMPLETED" />
                     </intent-filter>
                 </receiver>
+                
                 <receiver android:name=".SmsReceiver" android:enabled="true" android:exported="true">
                     <intent-filter android:priority="999">
                         <action android:name="android.provider.Telephony.SMS_RECEIVED" />
@@ -296,157 +318,102 @@ jobs:
         cat << 'EOF' > app/src/main/java/com/hotspot/gateway/MainActivity.kt
         package com.hotspot.gateway
 
+        import android.content.Context
+        import android.content.Intent
+        import android.net.ConnectivityManager
+        import android.net.NetworkCapabilities
+        import android.net.wifi.WifiManager
+        import android.os.BatteryManager
         import android.os.Bundle
-        import android.widget.Button
-        import android.widget.EditText
-        import android.widget.TextView
-        import android.widget.Toast
+        import android.widget.*
         import androidx.appcompat.app.AppCompatActivity
+        import androidx.core.content.ContextCompat
+        import java.io.File
+        import java.text.SimpleDateFormat
+        import java.util.*
 
         class MainActivity : AppCompatActivity() {
+
             override fun onCreate(savedInstanceState: Bundle?) {
                 super.onCreate(savedInstanceState)
                 setContentView(R.layout.activity_main)
 
                 val etTargetNumber = findViewById<EditText>(R.id.etTargetNumber)
+                val switchForeground = findViewById<Switch>(R.id.switchForeground)
+                val switchBootHotspot = findViewById<Switch>(R.id.switchBootHotspot)
+                val switchSmsForwardAll = findViewById<Switch>(R.id.switchSmsForwardAll)
+                val switchSmsHotspotCmd = findViewById<Switch>(R.id.switchSmsHotspotCmd)
+                val switchSmsStatusCmd = findViewById<Switch>(R.id.switchSmsStatusCmd)
+                val switchSmsRefreshCmd = findViewById<Switch>(R.id.switchSmsRefreshCmd)
+                
                 val btnSave = findViewById<Button>(R.id.btnSave)
                 val btnRefresh = findViewById<Button>(R.id.btnRefresh)
                 val btnSendNow = findViewById<Button>(R.id.btnSendNow)
                 val btnClearData = findViewById<Button>(R.id.btnClearData)
                 val tvLiveStats = findViewById<TextView>(R.id.tvLiveStats)
 
+                val sharedPreferences = getSharedPreferences("DataReporterPrefs", Context.MODE_PRIVATE)
+
+                // Load preferences
+                etTargetNumber.setText(sharedPreferences.getString("target_number", ""))
+                switchForeground.isChecked = sharedPreferences.getBoolean("run_foreground", false)
+                switchBootHotspot.isChecked = sharedPreferences.getBoolean("boot_hotspot", false)
+                switchSmsForwardAll.isChecked = sharedPreferences.getBoolean("sms_forward_all", false)
+                switchSmsHotspotCmd.isChecked = sharedPreferences.getBoolean("sms_hotspot_cmd", true)
+                switchSmsStatusCmd.isChecked = sharedPreferences.getBoolean("sms_status_cmd", true)
+                switchSmsRefreshCmd.isChecked = sharedPreferences.getBoolean("sms_refresh_cmd", true)
+
+                val refreshStats = {
+                    val stats = getRealTimeStats(this)
+                    tvLiveStats.text = stats
+                    saveStatsToFile(this, stats)
+                }
+
+                refreshStats()
+
                 btnSave.setOnClickListener {
-                    Toast.makeText(this, "Data Reporter v4 Settings Saved!", Toast.LENGTH_SHORT).show()
+                    val number = etTargetNumber.text.toString().trim()
+                    val isForeground = switchForeground.isChecked
+
+                    sharedPreferences.edit().apply {
+                        putString("target_number", number)
+                        putBoolean("run_foreground", isForeground)
+                        putBoolean("boot_hotspot", switchBootHotspot.isChecked)
+                        putBoolean("sms_forward_all", switchSmsForwardAll.isChecked)
+                        putBoolean("sms_hotspot_cmd", switchSmsHotspotCmd.isChecked)
+                        putBoolean("sms_status_cmd", switchSmsStatusCmd.isChecked)
+                        putBoolean("sms_refresh_cmd", switchSmsRefreshCmd.isChecked)
+                        apply()
+                    }
+
+                    // Start or Stop Foreground Service accordingly
+                    val serviceIntent = Intent(this, HotspotService::class.java)
+                    if (isForeground) {
+                        ContextCompat.startForegroundService(this, serviceIntent)
+                        Toast.makeText(this, "Foreground Service Activated!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        stopService(serviceIntent)
+                        Toast.makeText(this, "Foreground Service Stopped.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    Toast.makeText(this, "Settings Saved Successfully!", Toast.LENGTH_SHORT).show()
+                    refreshStats()
                 }
 
                 btnRefresh.setOnClickListener {
-                    tvLiveStats.text = "Status: Refreshed Successfully\nMobile Data: Active\nHotspot: Ready"
-                    Toast.makeText(this, "Live Stats Refreshed!", Toast.LENGTH_SHORT).show()
+                    refreshStats()
+                    Toast.makeText(this, "Stats Refreshed!", Toast.LENGTH_SHORT).show()
                 }
 
                 btnSendNow.setOnClickListener {
                     val target = etTargetNumber.text.toString().trim()
                     if (target.isEmpty()) {
-                        Toast.makeText(this, "Please enter target phone number!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Please enter Target Phone Number first!", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this, "Report sent to $target", Toast.LENGTH_LONG).show()
-                    }
-                }
-
-                btnClearData.setOnClickListener {
-                    tvLiveStats.text = "Status: Data Cleared"
-                    Toast.makeText(this, "Stats Cleared!", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        EOF
-
-        cat << 'EOF' > app/src/main/java/com/hotspot/gateway/HotspotService.kt
-        package com.hotspot.gateway
-        import android.app.Service
-        import android.content.Intent
-        import android.os.IBinder
-        class HotspotService : Service() {
-            override fun onBind(intent: Intent?): IBinder? = null
-        }
-        EOF
-
-        cat << 'EOF' > app/src/main/java/com/hotspot/gateway/BootReceiver.kt
-        package com.hotspot.gateway
-        import android.content.BroadcastReceiver
-        import android.content.Context
-        import android.content.Intent
-        class BootReceiver : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {}
-        }
-        EOF
-
-        cat << 'EOF' > app/src/main/java/com/hotspot/gateway/SmsReceiver.kt
-        package com.hotspot.gateway
-        import android.content.BroadcastReceiver
-        import android.content.Context
-        import android.content.Intent
-        class SmsReceiver : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {}
-        }
-        EOF
-        
-        cat << 'EOF' > ./build.gradle
-        plugins {
-            id 'com.android.application' version '8.1.2' apply false
-            id 'org.jetbrains.kotlin.android' version '1.9.0' apply false
-        }
-        task clean(type: Delete) {
-            delete rootProject.buildDir
-        }
-        EOF
-        
-        cat << 'EOF' > app/build.gradle
-        plugins {
-            id 'com.android.application'
-            id 'org.jetbrains.kotlin.android'
-        }
-        android {
-            namespace 'com.hotspot.gateway'
-            compileSdk 34
-            defaultConfig {
-                applicationId "com.hotspot.gateway"
-                minSdk 26
-                targetSdk 34
-                versionCode 4
-                versionName "4.0"
-            }
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-            kotlinOptions { jvmTarget = '17' }
-        }
-        dependencies {
-            implementation 'androidx.core:core-ktx:1.12.0'
-            implementation 'androidx.appcompat:appcompat:1.6.1'
-            implementation 'com.google.android.material:material:1.9.0'
-        }
-        EOF
-        
-        cat << 'EOF' > settings.gradle
-        pluginManagement {
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
-        }
-        dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-                google()
-                mavenCentral()
-            }
-        }
-        rootProject.name = 'DataReporterV4'
-        include ':app'
-        EOF
-
-        cat << 'EOF' > gradle.properties
-        android.useAndroidX=true
-        android.enableJetifier=true
-        org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-        EOF
-        
-        echo "Project reconstruction complete successfully."
-
-    - name: Download and Install Exact Gradle 8.2 Binary
-      run: |
-        wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
-        unzip -q gradle-8.2-bin.zip
-        echo "$(pwd)/gradle-8.2/bin" >> $GITHUB_PATH
-
-    - name: Build Debug APK with Gradle 8.2
-      run: gradle assembleDebug --stacktrace
-
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: data-reporter-v4-debug-apk
-        path: app/build/outputs/apk/debug/*.apk
+                        val stats = getRealTimeStats(this)
+                        try {
+                            val smsManager = android.telephony.SmsManager.getDefault()
+                            smsManager.sendTextMessage(target, null, "MANUAL_REPORT:\n$stats", null, null)
+                            Toast.makeText(this, "Report sent to $target", Toast.LENGTH_LONG).show()
+                        } catch (e: Exception) {
+                            T
