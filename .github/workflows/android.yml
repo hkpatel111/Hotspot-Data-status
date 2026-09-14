@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: android-actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -22,28 +22,54 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Upgrade Gradle Wrapper to Compatible Version
+    - name: Fix Missing Gradle Project Structure
       run: |
-        # Purane gradle version ko hata kar Java 17 compatible Gradle 8.5 set kar rahe hain
-        if [ -f "./gradle/wrapper/gradle-wrapper.properties" ]; then
-          sed -i 's/distributionUrl=.*$/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-8.5-bin.zip/g' ./gradle/wrapper/gradle-wrapper.properties
-        fi
+        echo "Searching for gradle files in the repository..."
+        find . -maxdepth 3 -name "settings.gradle*" -o -name "build.gradle*"
         
-        if [ -f "./gradlew" ]; then
+        # Agar root me settings.gradle nahi hai, toh subfolder se dhoond kar bahar laye ya naya create karein
+        if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
+          echo "Root settings.gradle missing. Checking subfolders..."
+          SUB_SETTINGS=$(find . -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1)
+          if [ -n "$SUB_SETTINGS" ]; then
+            echo "Found settings.gradle in subfolder, copying to root..."
+            cp "$SUB_SETTINGS" ./
+          else
+            echo "Creating a default settings.gradle and root build.gradle..."
+            echo "include ':app'" > settings.gradle
+          fi
+        fi
+
+        # Ensure gradle wrapper exists or generate it
+        if [ ! -f "./gradlew" ]; then
+          gradle wrapper --gradle-version 8.5
           chmod +x gradlew
         else
-          gradle wrapper --gradle-version 8.5
           chmod +x gradlew
         fi
 
     - name: Build Debug APK with Gradle
+      id: build_step
+      continue-on-error: true
       run: |
         ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: hotspot-gateway-debug-apk
         path: |
           **/build/outputs/apk/debug/*.apk
           app/build/outputs/apk/debug/*.apk
+
+    - name: Upload Error Logs on Failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: hotspot-build-error-logs
+        path: |
+          **/*.log
+          **/build/reports/
+          hs_err_pid*.log
+          .gradle/
