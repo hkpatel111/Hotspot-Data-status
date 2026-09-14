@@ -37,6 +37,20 @@ jobs:
             echo "No zip file found. Proceeding with existing files."
           fi
 
+      - name: Fix Missing String Resource
+        run: |
+          STRINGS_FILE="app/src/main/res/values/strings.xml"
+          mkdir -p $(dirname "$STRINGS_FILE")
+          if [ ! -f "$STRINGS_FILE" ]; then
+            echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="notification_title">Hotspot Service</string></resources>' > "$STRINGS_FILE"
+          else
+            if ! grep -q "notification_title" "$STRINGS_FILE"; then
+              # Insert before the closing </resources> tag
+              sed -i 's|</resources>|    <string name="notification_title">Hotspot Service</string>\n</resources>|' "$STRINGS_FILE"
+            fi
+          fi
+          echo "String resource check completed."
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
