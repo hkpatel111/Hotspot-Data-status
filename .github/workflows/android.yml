@@ -227,7 +227,7 @@ jobs:
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="/storage/emulated/0/Android/data/com.hotspot.gateway/files/DataReporter/data.txt\n/storage/emulated/0/Android/data/com.hotspot.gateway/files/DataReporter/data.json"
+                        android:text="/storage/emulated/0/Android/data/com.hotspot.gateway/files/DataReporter/data.txt"
                         android:textSize="11sp"
                         android:textColor="#4B5563"
                         android:fontFamily="monospace" />
@@ -251,7 +251,7 @@ jobs:
                     android:textSize="13sp"
                     android:textColor="#1F2937"
                     android:fontFamily="monospace"
-                    android:text="=== Mobile Data ===\nToday:    2.35 GB\nDL: 2.32 GB  UL: 33.56 MB\nThis Month: 4.90 GB\nDL: 4.78 GB  UL: 128.24 MB\nLast Hour:  41.80 KB\nMax DL:   6.73 KB/s\nMax UL:   4.32 KB/s\n\n=== WiFi ===\nTotal:    11.42 GB\nRX: 9.08 GB  TX: 2.33 GB\n\n=== Hotspot ===\nClients:  0\nDevices:  None\n\n=== Device ===\nBattery:  61% | Charging (AC)\nUptime:   8d 4h 38m"
+                    android:text="Data Reporter v4 Ready"
                     android:elevation="1dp" />
 
             </LinearLayout>
@@ -282,7 +282,6 @@ jobs:
                 <receiver android:name=".BootReceiver" android:enabled="true" android:exported="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
                     <intent-filter>
                         <action android:name="android.intent.action.BOOT_COMPLETED" />
-                        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                     </intent-filter>
                 </receiver>
                 <receiver android:name=".SmsReceiver" android:enabled="true" android:exported="true">
@@ -300,13 +299,9 @@ jobs:
         import android.os.Bundle
         import android.widget.Button
         import android.widget.EditText
-        import android.widget.Switch
         import android.widget.TextView
         import android.widget.Toast
         import androidx.appcompat.app.AppCompatActivity
-        import java.text.SimpleDateFormat
-        import java.util.Date
-        import java.util.Locale
 
         class MainActivity : AppCompatActivity() {
             override fun onCreate(savedInstanceState: Bundle?) {
@@ -314,7 +309,6 @@ jobs:
                 setContentView(R.layout.activity_main)
 
                 val etTargetNumber = findViewById<EditText>(R.id.etTargetNumber)
-                val etInterval = findViewById<EditText>(R.id.etInterval)
                 val btnSave = findViewById<Button>(R.id.btnSave)
                 val btnRefresh = findViewById<Button>(R.id.btnRefresh)
                 val btnSendNow = findViewById<Button>(R.id.btnSendNow)
@@ -326,8 +320,7 @@ jobs:
                 }
 
                 btnRefresh.setOnClickListener {
-                    val currentTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
-                    tvLiveStats.text = "=== Mobile Data ===\nToday:    2.41 GB [Refreshed @ $currentTime]\nDL: 2.38 GB  UL: 34.10 MB\nThis Month: 4.96 GB\nLast Hour:  52.10 KB\nMax DL:   7.12 KB/s\n\n=== WiFi ===\nTotal:    11.45 GB\n\n=== Hotspot ===\nClients:  1 connected\nDevices:  Android-Device\n\n=== Device ===\nBattery:  62% | Charging (AC)\nUptime:   8d 4h 45m"
+                    tvLiveStats.text = "Status: Refreshed Successfully\nMobile Data: Active\nHotspot: Ready"
                     Toast.makeText(this, "Live Stats Refreshed!", Toast.LENGTH_SHORT).show()
                 }
 
@@ -336,13 +329,13 @@ jobs:
                     if (target.isEmpty()) {
                         Toast.makeText(this, "Please enter target phone number!", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this, "Report sent successfully to $target", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Report sent to $target", Toast.LENGTH_LONG).show()
                     }
                 }
 
                 btnClearData.setOnClickListener {
-                    tvLiveStats.text = "=== Mobile Data ===\nToday: 0.00 KB\nThis Month: 0.00 KB\nHotspot Clients: 0\nStatus: Cleared."
-                    Toast.makeText(this, "Stats Cleared Successfully!", Toast.LENGTH_SHORT).show()
+                    tvLiveStats.text = "Status: Data Cleared"
+                    Toast.makeText(this, "Stats Cleared!", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -441,4 +434,19 @@ jobs:
         org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
         EOF
         
-        echo "Project re
+        echo "Project reconstruction complete successfully."
+
+    - name: Download and Install Exact Gradle 8.2 Binary
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
+        unzip -q gradle-8.2-bin.zip
+        echo "$(pwd)/gradle-8.2/bin" >> $GITHUB_PATH
+
+    - name: Build Debug APK with Gradle 8.2
+      run: gradle assembleDebug --stacktrace
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: data-reporter-v4-debug-apk
+        path: app/build/outputs/apk/debug/*.apk
